@@ -127,14 +127,16 @@ public class Application {
 
                 if (type) {
                     BigInteger p = new BigInteger(matcher.group(1));
-                    BigInteger g = new BigInteger(matcher.group(2));
-                    BigInteger h = new BigInteger(matcher.group(3));
-                    publicKey = new PublicKey(p, g, h);
+                    BigInteger h = new BigInteger(matcher.group(2));
+                    BigInteger q = new BigInteger(matcher.group(3));
+                    BigInteger b = new BigInteger(matcher.group(4));
+                    publicKey = new PublicKey(p, h, q, b);
                     log("Public key imported.");
                 } else {
                     BigInteger a = new BigInteger(matcher.group(1));
                     BigInteger p = new BigInteger(matcher.group(2));
-                    privateKey = new PrivateKey(a, p);
+                    BigInteger q = new BigInteger(matcher.group(3));
+                    privateKey = new PrivateKey(a, p, q);
                     log("Private key imported.");
                 }
 
