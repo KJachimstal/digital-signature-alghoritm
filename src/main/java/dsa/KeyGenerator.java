@@ -20,6 +20,7 @@ public class KeyGenerator {
     public void generate() {
         p = generatePrimeNumber(length);
         q = generateQ();
+        h = generateH();
     }
 
     public static BigInteger generatePrimeNumber(int length) {
@@ -45,6 +46,19 @@ public class KeyGenerator {
         return result;
     }
 
+    public BigInteger generateH() {
+        Random rng = new Random();
+        BigInteger result;
+        int range = 1 + rng.nextInt(p.toString().length() - 1 );
+
+        do {
+            result = new BigInteger(range, rng);
+            if (result.modPow(q, p).equals(BigInteger.ONE)) {
+                continue;
+            }
+        } while (!result.isProbablePrime(100));
+        return result;
+    }
 
     public PublicKey getPublicKey() {
         return publicKey;
