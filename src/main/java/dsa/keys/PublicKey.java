@@ -5,25 +5,29 @@ import dsa.Key;
 import java.math.BigInteger;
 
 public class PublicKey implements Key {
-    BigInteger p, g, h;
+    BigInteger p, h, q, b;
 
-    public PublicKey(BigInteger p, BigInteger g, BigInteger h) {
+    public PublicKey(BigInteger p, BigInteger h, BigInteger q, BigInteger b) {
         this.p = p;
-        this.g = g;
         this.h = h;
-        // TODO: Implement DSA values in PublicKey
+        this.q = q;
+        this.b = b;
     }
 
     public BigInteger getP() {
         return p;
     }
 
-    public BigInteger getG() {
-        return g;
-    }
-
     public BigInteger getH() {
         return h;
+    }
+
+    public BigInteger getQ() {
+        return q;
+    }
+
+    public BigInteger getB() {
+        return b;
     }
 
     public byte[] getBytes() {
@@ -35,14 +39,17 @@ public class PublicKey implements Key {
         StringBuilder sb = new StringBuilder();
         sb.append(p.toString());
         sb.append("%");
-        sb.append(g.toString());
-        sb.append("%");
         sb.append(h.toString());
+        sb.append("%");
+        sb.append(q.toString());
+        sb.append("%");
+        sb.append(b.toString());
+
         return sb.toString();
     }
 
     public static String getPattern() {
-        return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
+        return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
     }
 
     public int getMaxLength() {
