@@ -21,6 +21,8 @@ public class KeyGenerator {
         p = generatePrimeNumber(length);
         q = generateQ();
         h = generateH();
+        a = generateA();
+        b = generateB();
     }
 
     public static BigInteger generatePrimeNumber(int length) {
@@ -57,6 +59,21 @@ public class KeyGenerator {
                 continue;
             }
         } while (!result.isProbablePrime(100));
+        return result;
+    }
+
+    public BigInteger generateA() {
+        Random rng = new Random();
+        int range = 1 + rng.nextInt(q.toString().length() - 1);
+        BigInteger result = new BigInteger(range, rng);
+
+        return result;
+    }
+
+    public BigInteger generateB() {
+        BigInteger result;
+        result = h.modPow(a, p);
+
         return result;
     }
 
