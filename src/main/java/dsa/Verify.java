@@ -3,10 +3,10 @@ package dsa;
 import dsa.exceptions.CorruptedDataException;
 import dsa.keys.PrivateKey;
 
-public class Decryption extends Cryptography {
+public class Verify extends Cryptography {
     private PrivateKey privateKey;
 
-    public Decryption() {
+    public Verify() {
         // TODO: Implement decryption constructor
     }
 
