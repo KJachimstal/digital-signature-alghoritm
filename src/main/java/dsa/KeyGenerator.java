@@ -18,20 +18,20 @@ public class KeyGenerator {
     }
 
     public void generate() {
-        p = generatePrimeNumber(length);
+        p = generatePrimeNumber();
         q = generateQ();
         h = generateH();
         a = generateA();
         b = generateB();
     }
 
-    public static BigInteger generatePrimeNumber(int length) {
+    public BigInteger generatePrimeNumber() {
         Random rng = new Random();
         BigInteger result;
 
         do {
             result = new BigInteger(length, rng);
-        } while (!result.isProbablePrime(100) || result.bitLength() != 64);
+        } while (!result.isProbablePrime(100) || result.bitLength() != 512);
 
         return result;
     }
@@ -48,7 +48,7 @@ public class KeyGenerator {
         return result;
     }
 
-    public BigInteger generateH() {
+    public  BigInteger generateH() {
         Random rng = new Random();
         BigInteger result;
         int range = 1 + rng.nextInt(p.toString().length() - 1 );
@@ -83,5 +83,25 @@ public class KeyGenerator {
 
     public PrivateKey getPrivateKey() {
         return privateKey;
+    }
+
+    public BigInteger getP() {
+        return p;
+    }
+
+    public BigInteger getH() {
+        return h;
+    }
+
+    public BigInteger getQ() {
+        return q;
+    }
+
+    public BigInteger getB() {
+        return b;
+    }
+
+    public BigInteger getA() {
+        return a;
     }
 }
