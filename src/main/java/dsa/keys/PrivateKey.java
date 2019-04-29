@@ -7,11 +7,12 @@ import java.math.BigInteger;
 public class PrivateKey implements Key {
     private BigInteger a;
     private BigInteger p;
+    private BigInteger q;
 
-    public PrivateKey(BigInteger a, BigInteger p) {
+    public PrivateKey(BigInteger a, BigInteger p, BigInteger q) {
         this.a = a;
         this.p = p;
-        // TODO: Implement DSA values in PrivateKey
+        this.q = q;
     }
 
     public BigInteger getA() {
@@ -20,6 +21,10 @@ public class PrivateKey implements Key {
 
     public BigInteger getP() {
         return p;
+    }
+
+    public BigInteger getQ() {
+        return q;
     }
 
     public byte[] getBytes() {
@@ -32,12 +37,14 @@ public class PrivateKey implements Key {
         sb.append(a.toString());
         sb.append("%");
         sb.append(p.toString());
+        sb.append("%");
+        sb.append(q.toString());
 
         return sb.toString();
     }
 
     public static String getPattern() {
-        return "^([0-9]+)\\%([0-9]+)$";
+        return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
     }
 
     public int getMaxLength() {
