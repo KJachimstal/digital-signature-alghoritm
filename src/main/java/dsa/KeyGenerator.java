@@ -8,17 +8,18 @@ import java.util.Random;
 
 public class KeyGenerator {
 
-    BigInteger p, h, q, b, a;
-    PublicKey publicKey;
-    PrivateKey privateKey;
-    int length;
+    private BigInteger p, h, q, b, a;
+    private PublicKey publicKey;
+    private PrivateKey privateKey;
+    private int length;
 
     public KeyGenerator(int length) {
         this.length = length;
     }
 
     public void generate() {
-       // TODO: Implement generate method in KeyGenerator
+        p = generatePrimeNumber(length);
+        q = generateQ();
     }
 
     public static BigInteger generatePrimeNumber(int length) {
@@ -31,6 +32,19 @@ public class KeyGenerator {
 
         return result;
     }
+
+    public BigInteger generateQ() {
+        Random rng = new Random();
+        BigInteger result;
+        boolean remainder = true;
+
+        do {
+            result = new BigInteger(160, rng);
+            remainder = p.subtract(BigInteger.ONE).mod(result).equals(BigInteger.ZERO);
+        } while (!result.isProbablePrime(100) || result.bitLength() != 160 || remainder);
+        return result;
+    }
+
 
     public PublicKey getPublicKey() {
         return publicKey;
