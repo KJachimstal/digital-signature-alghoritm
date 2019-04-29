@@ -257,14 +257,14 @@ public class Application {
             System.out.println(Arrays.toString(data));
 //            Block[] blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
             // TODO: Uncomment when generateBlocks was finished
-//            Decryption decryption = new Decryption(blocks, privateKey);
-            // TODO: Uncomment when Decryption class was finished
+//            Verify decryption = new Verify(blocks, privateKey);
+            // TODO: Uncomment when Verify class was finished
             log("Starting decryption...");
 
             try {
 //                decryption.decrypt();
-                // TODO: Uncomment when Decryption class was finished
-                log("Decryption completed successfully.");
+                // TODO: Uncomment when Verify class was finished
+                log("Verify completed successfully.");
 //                byte[] bytes = Operations.blocksToBytes(decryption.getResults(), privateKey.getMaxLength());
                 // TODO: Uncomment when blocksTOBytes method was finished
 
@@ -292,7 +292,7 @@ public class Application {
                 // TODO: Uncomment corrupted data exception in decrypt method
                 String message = "Corrupted data.";
                 log(message);
-                JOptionPane.showMessageDialog(frame, message, "Decryption error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, message, "Verify error", JOptionPane.ERROR_MESSAGE);
             }
 
             canProcess = true;
