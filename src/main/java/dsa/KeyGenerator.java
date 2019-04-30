@@ -25,9 +25,8 @@ public class KeyGenerator {
         h = generateH();
         a = generateA();
         b = generateB();
-        this.publicKey = new PublicKey(p, h, q, b);
-        this.privateKey = new PrivateKey(a, p, q);
-
+        publicKey = new PublicKey(p, h, q, b);
+        privateKey = new PrivateKey(a, p, q);
     }
 
     public BigInteger generatePrimeNumber() {
