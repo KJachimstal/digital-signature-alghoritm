@@ -136,7 +136,8 @@ public class Application {
                     BigInteger a = new BigInteger(matcher.group(1));
                     BigInteger p = new BigInteger(matcher.group(2));
                     BigInteger q = new BigInteger(matcher.group(3));
-                    privateKey = new PrivateKey(a, p, q);
+                    BigInteger h = new BigInteger(matcher.group(4));
+                    privateKey = new PrivateKey(a, p, q, h);
                     log("Private key imported.");
                 }
 
@@ -262,7 +263,7 @@ public class Application {
             log("Starting decryption...");
 
             try {
-//                decryption.decrypt();
+//                decryption.check();
                 // TODO: Uncomment when Verify class was finished
                 log("Verify completed successfully.");
 //                byte[] bytes = Operations.blocksToBytes(decryption.getResults(), privateKey.getMaxLength());
@@ -275,7 +276,7 @@ public class Application {
                         String selectedPath = keyChooser.getSelectedFile().getAbsolutePath();
                         try {
 //                        DataUtils.saveBytes(bytes, selectedPath);
-                            // TODO: Uncomment saveBytes in decrypt method
+                            // TODO: Uncomment saveBytes in check method
                             log("Decrypted data saved: " + selectedPath);
                         } catch (Exception ex) {
                             String message = "Could not save file: " + selectedPath;
@@ -285,11 +286,11 @@ public class Application {
                     }
                 } else {
 //                    outputTextArea.setText(new String(bytes));
-                    // TODO: Uncomment setText in decrypt method
+                    // TODO: Uncomment setText in check method
                 }
             } catch (Exception e) {
 //            } catch (CorruptedDataException e) {
-                // TODO: Uncomment corrupted data exception in decrypt method
+                // TODO: Uncomment corrupted data exception in check method
                 String message = "Corrupted data.";
                 log(message);
                 JOptionPane.showMessageDialog(frame, message, "Verify error", JOptionPane.ERROR_MESSAGE);
