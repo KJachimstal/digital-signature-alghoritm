@@ -11,10 +11,12 @@ public class KeyGenerator {
     private BigInteger p, h, q, b, a;
     private PublicKey publicKey;
     private PrivateKey privateKey;
+
     private int length;
 
     public KeyGenerator(int length) {
         this.length = length;
+        generate();
     }
 
     public void generate() {
@@ -23,6 +25,9 @@ public class KeyGenerator {
         h = generateH();
         a = generateA();
         b = generateB();
+        this.publicKey = new PublicKey(p, h, q, b);
+        this.privateKey = new PrivateKey(a, p, q);
+
     }
 
     public BigInteger generatePrimeNumber() {
