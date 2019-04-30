@@ -8,11 +8,13 @@ public class PrivateKey implements Key {
     private BigInteger a;
     private BigInteger p;
     private BigInteger q;
+    private BigInteger h;
 
-    public PrivateKey(BigInteger a, BigInteger p, BigInteger q) {
+    public PrivateKey(BigInteger a, BigInteger p, BigInteger q, BigInteger h) {
         this.a = a;
         this.p = p;
         this.q = q;
+        this.h = h;
     }
 
     public BigInteger getA() {
@@ -26,6 +28,8 @@ public class PrivateKey implements Key {
     public BigInteger getQ() {
         return q;
     }
+
+    public BigInteger getH() { return h; }
 
     public byte[] getBytes() {
         return toString().getBytes();

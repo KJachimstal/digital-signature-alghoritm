@@ -16,7 +16,6 @@ public class KeyGenerator {
 
     public KeyGenerator(int length) {
         this.length = length;
-        generate();
     }
 
     public void generate() {
@@ -26,7 +25,7 @@ public class KeyGenerator {
         a = generateA();
         b = generateB();
         publicKey = new PublicKey(p, h, q, b);
-        privateKey = new PrivateKey(a, p, q);
+        privateKey = new PrivateKey(a, p, q, h);
     }
 
     public BigInteger generatePrimeNumber() {
