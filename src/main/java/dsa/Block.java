@@ -1,14 +1,13 @@
 package dsa;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 
 public class Block {
     private byte[] data;
     public int fill = -1;
 
     public Block(byte[] data) {
-        this.data = data.clone();
+        this.data = Operations.getHash(data).clone();
     }
 
     public Block(BigInteger number, int fill) {
