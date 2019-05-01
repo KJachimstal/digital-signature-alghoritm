@@ -48,6 +48,16 @@ public class PublicKey implements Key {
         return sb.toString();
     }
 
+    public String toStringS() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(p.toString());
+        sb.append(h.toString());
+        sb.append(q.toString());
+        sb.append(b.toString());
+
+        return sb.toString();
+    }
+
     public static String getPattern() {
         return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
     }
