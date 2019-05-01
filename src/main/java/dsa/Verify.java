@@ -9,10 +9,10 @@ import java.math.BigInteger;
 public class Verify extends Cryptography {
     private PublicKey publicKey;
     private BigInteger t;
-    private BigInteger[] encrypted, data;
+    private Block[] encrypted, data;
 
 
-    public Verify(BigInteger[] encrypted, BigInteger[] data, PublicKey publicKey) {
+    public Verify(Block[] encrypted, Block[] data, PublicKey publicKey) {
         this.encrypted = encrypted;
         this.publicKey = publicKey;
         this.data = data;
@@ -21,8 +21,8 @@ public class Verify extends Cryptography {
     public boolean check() {
         for (int i = 0; i < encrypted.length / 2; i++) {
             BigInteger s = generateS(i);
-            BigInteger u1 = data[i].multiply(s).mod(publicKey.getQ());
-            BigInteger u2 = s.multiply(encrypted[i * 2]).mod(publicKey.getQ());
+            BigInteger u1 = new BigInteger(data[i].getData()).multiply(s).mod(publicKey.getQ());
+            BigInteger u2 = s.multiply(new BigInteger(encrypted[i * 2].getData())).mod(publicKey.getQ());
             t = publicKey.getH().modPow(u1, publicKey.getP())
                 .multiply(publicKey.getB().modPow(u2, publicKey.getP())
                 .mod(publicKey.getP()).mod(publicKey.getP()));
@@ -35,6 +35,6 @@ public class Verify extends Cryptography {
     }
 
     public BigInteger generateS(int i) {
-        return encrypted[i * 2 + 1].modInverse(publicKey.getQ());
+        return new BigInteger(encrypted[i * 2 + 1].getData()).modInverse(publicKey.getQ());
     }
 }
