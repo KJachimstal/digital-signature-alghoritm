@@ -31,10 +31,9 @@ public class KeyGenerator {
     public BigInteger generatePrimeNumber() {
         Random rng = new Random();
         BigInteger result;
-
         do {
             result = new BigInteger(length, rng);
-        } while (!result.isProbablePrime(100) || result.bitLength() != 512);
+        } while (!result.isProbablePrime(100) || result.bitLength() != length);
 
         return result;
     }
@@ -43,7 +42,6 @@ public class KeyGenerator {
         Random rng = new Random();
         BigInteger result;
         boolean remainder = true;
-
         do {
             result = new BigInteger(160, rng);
             remainder = p.subtract(BigInteger.ONE).mod(result).equals(BigInteger.ZERO);
@@ -54,8 +52,7 @@ public class KeyGenerator {
     public  BigInteger generateH() {
         Random rng = new Random();
         BigInteger result;
-        int range = 1 + rng.nextInt(p.toString().length() - 1 );
-
+        int range = 1 + rng.nextInt(p.bitLength() - 2);
         do {
             result = new BigInteger(range, rng);
             if (result.modPow(q, p).equals(BigInteger.ONE)) {
@@ -67,7 +64,7 @@ public class KeyGenerator {
 
     public BigInteger generateA() {
         Random rng = new Random();
-        int range = 1 + rng.nextInt(q.toString().length() - 1);
+        int range = 1 + rng.nextInt(q.bitLength() - 2);
         BigInteger result = new BigInteger(range, rng);
 
         return result;
