@@ -1,7 +1,6 @@
 package dsa;
 
 import dsa.keys.PrivateKey;
-
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -51,5 +50,9 @@ public class Sign extends Cryptography {
 
     public Block[] getResults() {
         return results;
+    }
+
+    public BigInteger getrPrim() {
+        return rPrim;
     }
 }

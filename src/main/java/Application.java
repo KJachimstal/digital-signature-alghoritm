@@ -1,5 +1,4 @@
 import dsa.*;
-import dsa.exceptions.CorruptedDataException;
 import dsa.keys.PrivateKey;
 import dsa.keys.PublicKey;
 
@@ -9,6 +8,7 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -41,11 +41,14 @@ public class Application {
 
 //    Model
     private byte[] data;
+    private Block[] previous;
     private JFileChooser inputChooser;
     private PrivateKey privateKey;
     private PublicKey publicKey;
     private boolean canProcess = false;
     private boolean loadedFromFile = false;
+    // TODO: Dalete rPrim attribute
+    private BigInteger rPrim;
 
     public Application(JFrame frame) {
         this.frame = frame;
@@ -208,22 +211,22 @@ public class Application {
     }
 
     private void encrypt() {
-        if (publicKey != null) {
+        if (privateKey != null) {
             canProcess = false;
             _updateButtons();
 
             log("Preparing encryption...");
-//            Block[] blocks = Operations.generateBlocks(data, publicKey.getMaxLength());
-            // TODO: Implement generateBlock method
-//            Encryption encryption = new Encryption(blocks, publicKey);
+            Block[] blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
+            previous = Operations.generateBlocks(data, privateKey.getMaxLength());
+            Sign encryption = new Sign(blocks, privateKey);
+            // TODO: Delete rPrim attribution
+            rPrim = encryption.getrPrim();
             log("Starting encryption...");
-//            encryption.encrypt();
-            // TODO: Uncomment when Encryption was finished
-            log("Encryption completed successfully.");
+            encryption.encrypt();
+            log("Sign completed successfully.");
 
 
-//            byte[] bytes = Operations.blocksToBytes(encryption.getResults(), publicKey.getMaxLength());
-            // TODO: Implement blocksToBytes method
+            byte[] bytes = Operations.blocksToBytes(encryption.getResults(), privateKey.getMaxLength());
 
             if (loadedFromFile) {
                 JFileChooser keyChooser = new JFileChooser();
@@ -231,8 +234,7 @@ public class Application {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     String selectedPath = keyChooser.getSelectedFile().getAbsolutePath();
                     try {
-//                        DataUtils.saveBytes(bytes, selectedPath);
-                        // TODO: Uncomment saveBytes in encrypt method
+                        DataUtils.saveBytes(bytes, selectedPath);
                         log("Encrypted data saved: " + selectedPath);
                     } catch (Exception ex) {
                         String message = "Could not save file: " + selectedPath;
@@ -241,8 +243,7 @@ public class Application {
                     }
                 }
             } else {
-//                outputTextArea.setText(new String(bytes));
-                // TODO: Uncomment setText in encrypt method
+                outputTextArea.setText(new String(bytes));
             }
             canProcess = true;
             _updateButtons();
@@ -250,21 +251,19 @@ public class Application {
     }
 
     private void decrypt() {
-        if (privateKey != null) {
+        if (publicKey != null) {
             canProcess = false;
             _updateButtons();
 
             log("Preparing decryption...");
             System.out.println(Arrays.toString(data));
-//            Block[] blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
-            // TODO: Uncomment when generateBlocks was finished
-//            Verify decryption = new Verify(blocks, privateKey);
-            // TODO: Uncomment when Verify class was finished
+            Block[] blocks = Operations.generateBlocks(data, publicKey.getMaxLength());
+            // TODO: Delete rPrim form constructor in decrypt method
+            Verify decryption = new Verify(blocks, previous,  publicKey, rPrim);
             log("Starting decryption...");
 
             try {
-//                decryption.check();
-                // TODO: Uncomment when Verify class was finished
+                decryption.check();
                 log("Verify completed successfully.");
 //                byte[] bytes = Operations.blocksToBytes(decryption.getResults(), privateKey.getMaxLength());
                 // TODO: Uncomment when blocksTOBytes method was finished
@@ -319,8 +318,8 @@ public class Application {
 
     private void _updateButtons() {
         if (data != null && data.length > 0) {
-            encryptButton.setEnabled(publicKey != null);
-            decryptButton.setEnabled(privateKey != null);
+            encryptButton.setEnabled(privateKey != null);
+            decryptButton.setEnabled(publicKey != null);
         } else {
             encryptButton.setEnabled(false);
             decryptButton.setEnabled(false);

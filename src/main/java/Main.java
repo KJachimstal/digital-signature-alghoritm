@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        JFrame frame = new JFrame("ElGamal Encryption & Verify");
+        JFrame frame = new JFrame("ElGamal Sign & Verify");
         Application application = new Application(frame);
         frame.setContentPane(application.mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

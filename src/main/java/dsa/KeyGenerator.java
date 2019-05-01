@@ -2,7 +2,6 @@ package dsa;
 
 import dsa.keys.PrivateKey;
 import dsa.keys.PublicKey;
-
 import java.math.BigInteger;
 import java.util.Random;
 
