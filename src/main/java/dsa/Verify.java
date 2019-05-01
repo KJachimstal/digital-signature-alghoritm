@@ -21,12 +21,17 @@ public class Verify extends Cryptography {
     public boolean check() {
         for (int i = 0; i < encrypted.length / 2; i++) {
             BigInteger s = generateS(i);
-            BigInteger u1 = new BigInteger(data[i].getData()).multiply(s).mod(publicKey.getQ());
-            BigInteger u2 = s.multiply(new BigInteger(encrypted[i * 2].getData())).mod(publicKey.getQ());
-            t = publicKey.getH().modPow(u1, publicKey.getP())
-                .multiply(publicKey.getB().modPow(u2, publicKey.getP())
-                .mod(publicKey.getP()).mod(publicKey.getP()));
-            if (!t.equals(encrypted[i * 2])) {
+            BigInteger m = data[i].getBigInteger();
+            BigInteger s1 = encrypted[i * 2].getBigInteger();
+
+            BigInteger u1 = m.multiply(s).mod(publicKey.getQ());
+            BigInteger u2 = s.multiply(s1).mod(publicKey.getQ());
+            t = ((publicKey.getH().modPow(u1, publicKey.getP()))
+                .multiply(publicKey.getB().modPow(u2, publicKey.getP())))
+                .mod(publicKey.getP()).mod(publicKey.getQ());
+            System.out.println("T: "+t);
+            System.out.println("S1: "+s1);
+            if (!t.equals(s1)) {
                 return false;
             }
         }
@@ -35,6 +40,18 @@ public class Verify extends Cryptography {
     }
 
     public BigInteger generateS(int i) {
-        return new BigInteger(encrypted[i * 2 + 1].getData()).modInverse(publicKey.getQ());
+        return encrypted[i * 2 + 1].getBigInteger().modInverse(publicKey.getQ());
+    }
+
+    public BigInteger getT() {
+        return t;
+    }
+
+    public Block[] getEncrypted() {
+        return encrypted;
+    }
+
+    public Block[] getData() {
+        return data;
     }
 }
