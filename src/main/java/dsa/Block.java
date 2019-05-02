@@ -7,7 +7,6 @@ public class Block {
     public int fill = -1;
 
     public Block(byte[] data) {
-//        this.data = Operations.getHash(data).clone();
         this.data = data.clone();
     }
 

@@ -20,7 +20,7 @@ public class Sign extends Cryptography {
     public void encrypt() {
         results = new Block[data.length * 2];
         for (int i = 0; i < data.length; i++) {
-            BigInteger m = data[i].getBigInteger();
+            BigInteger m = Operations.Hash(data[i].toString());
             BigInteger p = privateKey.getP();
             BigInteger q = privateKey.getQ();
             BigInteger g = privateKey.getG();

@@ -1,7 +1,6 @@
 package dsa;
 
 import dsa.keys.PublicKey;
-
 import java.math.BigInteger;
 
 public class Verify extends Cryptography {
@@ -21,7 +20,7 @@ public class Verify extends Cryptography {
             BigInteger g = publicKey.getG();
             BigInteger b = publicKey.getB();
 
-            BigInteger m = data[i].getBigInteger();
+            BigInteger m = Operations.Hash(data[i].toString());
             BigInteger s1 = encrypted[i * 2].getBigInteger();
             BigInteger s2 = encrypted[i * 2 + 1].getBigInteger();
 

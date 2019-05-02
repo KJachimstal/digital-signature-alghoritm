@@ -3,9 +3,7 @@ package dsa;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 public class Operations {
     public static Block[] generateBlocks(byte[] data, int length) {
@@ -66,19 +64,13 @@ public class Operations {
         return out.clone();
     }
 
-    public static byte[] getHash(byte[] tab) {
-        String input = new String(tab);
+    public static BigInteger Hash(String message) {
         try {
-            MessageDigest mDigest = MessageDigest.getInstance("SHA1");
-            byte[] result = mDigest.digest(input.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < result.length; i++) {
-                sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            byte[] byteTab = sb.toString().getBytes();
-
-            return byteTab;
-        }catch (NoSuchAlgorithmException ex){
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(message.getBytes(), 0, message.length());
+            BigInteger res = new BigInteger(1, md.digest());
+            return res;
+        } catch (NoSuchAlgorithmException ex) {
             return null;
         }
     }
