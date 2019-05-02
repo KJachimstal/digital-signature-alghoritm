@@ -40,11 +40,11 @@ public class KeyGenerator {
     public BigInteger generateQ() {
         Random rng = new Random();
         BigInteger result;
-        boolean remainder = true;
+        boolean remainder;
         do {
             result = new BigInteger(160, rng);
             remainder = p.subtract(BigInteger.ONE).mod(result).equals(BigInteger.ZERO);
-        } while (!result.isProbablePrime(100) || result.bitLength() != 160 || remainder);
+        } while (!result.isProbablePrime(100) || result.bitLength() != 160 || !remainder);
         return result;
     }
 
