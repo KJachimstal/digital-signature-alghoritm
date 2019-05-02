@@ -183,7 +183,7 @@ public class Application {
             if (length < 5 || length > 400) {
                 throw new Exception("Invalid key length (only in range 5 - 400).");
             }
-            KeyGenerator keygen = new KeyGenerator(length);
+            KeyGenerator keygen = new KeyGenerator(length, 160);
             keygen.generate();
             publicKey = keygen.getPublicKey();
             log("Public key generated.");

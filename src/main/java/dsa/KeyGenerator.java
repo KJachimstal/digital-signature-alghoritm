@@ -3,69 +3,61 @@ package dsa;
 import dsa.keys.PrivateKey;
 import dsa.keys.PublicKey;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class KeyGenerator {
 
-    private BigInteger p, h, q, b, a;
+    private BigInteger p, g, q, b, a;
     private PublicKey publicKey;
     private PrivateKey privateKey;
 
-    private int length;
+    private int p_length;
+    private int q_length;
 
-    public KeyGenerator(int length) {
-        this.length = length;
+    private static final int CERTAINTY = 10;
+
+    public KeyGenerator(int p_length, int q_length) {
+        this.p_length = p_length;
+        this.q_length = q_length;
     }
 
     public void generate() {
-        System.out.println("Generate P");
-        p = generatePrimeNumber();
-        System.out.println("Generate Q");
         q = generateQ();
-        System.out.println("Generate H");
-        h = generateH();
-        System.out.println("Generate A");
+        p = generateP();
+        g = generateG();
         a = generateA();
-        System.out.println("Generate B");
         b = generateB();
-        System.out.println("End generate");
-        publicKey = new PublicKey(p, h, q, b);
-        privateKey = new PrivateKey(a, p, q, h);
-    }
 
-    public BigInteger generatePrimeNumber() {
-        Random rng = new Random();
-        BigInteger result;
-        do {
-            result = new BigInteger(length, rng);
-        } while (!result.isProbablePrime(100) || result.bitLength() != length);
-
-        return result;
+        publicKey = new PublicKey(p, g, q, b);
+        privateKey = new PrivateKey(a, p, q, g);
     }
 
     public BigInteger generateQ() {
-        Random rng = new Random();
+        SecureRandom rng = new SecureRandom();
         BigInteger result;
         do {
-            result = new BigInteger(160, rng);
-        } while (!result.isProbablePrime(100) || result.bitLength() != 160 );
+            result = new BigInteger(q_length, CERTAINTY, rng);
+        } while (result.bitLength() != q_length);
         return result;
     }
 
-    public  BigInteger generateH() {
-        Random rng = new Random();
-        BigInteger result;
-        int range = 1 + rng.nextInt(p.bitLength() - 2);
-
+    public BigInteger generateP() {
+        SecureRandom rng = new SecureRandom();
+        BigInteger tempP;
+        BigInteger tempP2;
         do {
-            result = new BigInteger(range, rng);
-            BigInteger exponent = (p.subtract(BigInteger.ONE)).divide(result);
-            if (result.modPow(exponent, p).equals(BigInteger.ONE)) {
-                continue;
-            }
+            tempP = new BigInteger(p_length, 20, rng);
+            tempP2 = tempP.subtract(BigInteger.ONE);
+            tempP = tempP.subtract(tempP2.remainder(q));
+        } while(!tempP.isProbablePrime(CERTAINTY) || tempP.bitLength() != p_length);
+        return tempP;
+    }
 
-        } while (result.equals(BigInteger.ZERO));
-        return result;
+
+    public  BigInteger generateG() {
+        BigInteger h = generateH();
+        return h.modPow(p.subtract(BigInteger.ONE).divide(q), p);
     }
 
     public BigInteger generateA() {
@@ -79,8 +71,17 @@ public class KeyGenerator {
         return result;
     }
 
+    public BigInteger generateH() {
+        SecureRandom rng = new SecureRandom();
+        BigInteger result;
+        do {
+            result = new BigInteger(p.bitLength() - 1, CERTAINTY, rng);
+        } while (result.modPow(p.subtract(BigInteger.ONE).divide(q), p).compareTo(BigInteger.ONE) != 1);
+        return result;
+    }
+
     public BigInteger generateB() {
-        return h.modPow(a, p);
+        return g.modPow(a, p);
     }
 
     public PublicKey getPublicKey() {
@@ -95,8 +96,8 @@ public class KeyGenerator {
         return p;
     }
 
-    public BigInteger getH() {
-        return h;
+    public BigInteger getG() {
+        return g;
     }
 
     public BigInteger getQ() {

@@ -23,32 +23,28 @@ class CryptographyTest {
     @BeforeEach
     void initialize(){
         data = new byte[] {1, 2, 3, 15, (byte)254};
-        System.out.println("Dane: " + Arrays.toString(data));
-//        System.out.println("Hash: " + Arrays.toString(Operations.getHash(data)));
-        System.out.println("-----------------------------------");
 
-
-
-        KeyGenerator keyGenerator = new KeyGenerator(1024);
+        KeyGenerator keyGenerator = new KeyGenerator(512, 160);
         keyGenerator.generate();
+
         publicKey = keyGenerator.getPublicKey();
         privateKey = keyGenerator.getPrivateKey();
-        blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
-        System.out.println(Arrays.toString(blocks));
+        blocks = new Block[] { new Block(data) };
     }
 
     @Test
-    void encrypt() throws NoSuchAlgorithmException {
+    void encrypt() {
         sign = new Sign(blocks, privateKey);
         sign.encrypt();
 
-        System.out.println("Dokument podpisany: \n" + Arrays.toString(sign.getResults()));
         verify = new Verify(sign.getResults(), blocks, publicKey);
-        System.out.println("----------------------VERIFY-----------------------");
-        System.out.println("Dokument niepodpisany: \n" + Arrays.toString(verify.getData()));
-        System.out.println("Dokument podpisany: \n" + Arrays.toString(verify.getEncrypted()));
-        verify.check();
 
         assertTrue(verify.check());
+
+        Block[] tmp = sign.getResults();
+        tmp[0].getData()[0] = 0x05;
+        tmp[0].getData()[5] = 0x01;
+        Verify canBeInvalid = new Verify(tmp, blocks, publicKey);
+        assertFalse(canBeInvalid.check());
     }
 }

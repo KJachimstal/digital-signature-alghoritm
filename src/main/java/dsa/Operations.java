@@ -3,7 +3,9 @@ package dsa;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Operations {
     public static Block[] generateBlocks(byte[] data, int length) {

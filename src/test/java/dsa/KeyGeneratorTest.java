@@ -13,14 +13,14 @@ class KeyGeneratorTest {
 
     @BeforeAll
     static void initialize() {
-        key = new KeyGenerator(512);
+        key = new KeyGenerator(1024, 160);
         BigInteger p, h, q, b, a;
         key.generate();
     }
 
     @Test
     void generatePrimeNumber() {
-        assertEquals(512, key.getP().bitLength());
+        assertEquals(1024, key.getP().bitLength());
     }
 
     @Test
@@ -30,7 +30,7 @@ class KeyGeneratorTest {
 
     @Test
     void generateH() {
-        assertTrue(key.getH().compareTo(key.getP()) == -1);
+        assertTrue(key.getG().compareTo(key.getP()) == -1);
     }
 
     @Test
@@ -40,6 +40,6 @@ class KeyGeneratorTest {
 
     @Test
     void generateB() {
-        assertTrue(key.getB().compareTo(key.getH().modPow(key.getA(), key.getP())) == 0);
+        assertTrue(key.getB().compareTo(key.getG().modPow(key.getA(), key.getP())) == 0);
     }
 }
