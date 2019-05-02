@@ -43,12 +43,14 @@ public class PrivateKey implements Key {
         sb.append(p.toString());
         sb.append("%");
         sb.append(q.toString());
+        sb.append("%");
+        sb.append(g.toString());
 
         return sb.toString();
     }
 
     public static String getPattern() {
-        return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
+        return "^([0-9]+)\\%([0-9]+)\\%([0-9]+)\\%([0-9]+)$";
     }
 
     public int getMaxLength() {
