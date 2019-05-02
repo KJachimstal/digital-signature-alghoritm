@@ -26,7 +26,6 @@ public class Application {
     private JButton importPublicKeyButton;
     private JTextArea log;
     private JLabel infoInputFile;
-    private JLabel infoBlocksCount;
     private JTextArea publicKeyTextarea;
     private JButton exportPublicKeyButton;
     private JButton encryptButton;
@@ -37,10 +36,15 @@ public class Application {
     private JButton importPrivateKeyButton;
     private JButton exportPrivateKeyButton;
     private JTextArea privateKeyTextarea;
+    private JTextArea signatureTextArea;
+    private JButton inputSignatureFile;
+    private JButton inputSignatureText;
+    private JLabel infoSignatureFile;
     private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 //    Model
     private byte[] data;
+    private byte[] signature;
     private Block[] previous;
     private JFileChooser inputChooser;
     private PrivateKey privateKey;
@@ -58,6 +62,8 @@ public class Application {
 //        Buttons
         setIcon(inputFile, "file_in.png");
         setIcon(inputText, "keyboard.png");
+        setIcon(inputSignatureFile, "file_in.png");
+        setIcon(inputSignatureText, "keyboard.png");
         setIcon(importPublicKeyButton, "cipher_key.png");
         setIcon(exportPublicKeyButton, "cipher_key.png");
         setIcon(importPrivateKeyButton, "cipher_key.png");
@@ -69,6 +75,8 @@ public class Application {
 //        Actions
         inputFile.addActionListener(e -> inputFileDialog());
         inputText.addActionListener(e -> inputTextDialog());
+        inputSignatureFile.addActionListener(e -> inputSignatureFileDialog());
+        inputSignatureText.addActionListener(e -> inputSignatureTextDialog());
         exportPublicKeyButton.addActionListener(e -> exportCipherKey(true));
         importPublicKeyButton.addActionListener(e -> importCipherKey(true));
         exportPrivateKeyButton.addActionListener(e -> exportCipherKey(false));
@@ -78,34 +86,56 @@ public class Application {
     }
 
     public void inputFileDialog() {
+        data = _loadFile(infoInputFile);
+        updateButtons();
+    }
+
+    public void inputSignatureFileDialog() {
+        signature = _loadFile(infoSignatureFile);
+        updateButtons();
+    }
+
+    private byte[] _loadFile(JLabel fileInfo) {
         inputChooser = new JFileChooser();
         int returnValue = inputChooser.showOpenDialog(mainPanel);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             String selectedFile = inputChooser.getSelectedFile().getPath();
             try {
-                data = DataUtils.loadBytes(selectedFile);
+                byte[] input_data = DataUtils.loadBytes(selectedFile);
 
-                String message = data.length + " bytes have been loaded.";
+                String message = input_data.length + " bytes have been loaded.";
                 log("File " + inputChooser.getSelectedFile().getName() + " loaded.");
                 log(message);
-                infoInputFile.setText(inputChooser.getSelectedFile().getName());
-                updateButtons();
+                fileInfo.setText(inputChooser.getSelectedFile().getName());
                 loadedFromFile = true;
+                return input_data;
             } catch (Exception ex) {
                 String message = "Could not load file: " + selectedFile;
                 log(message);
                 JOptionPane.showMessageDialog(frame, message, "Loading error", JOptionPane.ERROR_MESSAGE);
             }
         }
+        return null;
     }
 
     public void inputTextDialog() {
-        String input = inputTextArea.getText();
-        data = input.getBytes();
-        log("Text has been loaded.");
-        log(data.length + " bytes have been loaded.");
-        loadedFromFile = false;
+        data = _loadText(inputTextArea);
         updateButtons();
+    }
+
+    public void inputSignatureTextDialog() {
+        signature = _loadText(signatureTextArea);
+        updateButtons();
+    }
+
+    public byte[] _loadText(JTextArea textarea) {
+        String input = textarea.getText();
+        byte[] input_data = input.getBytes();
+        log("Text has been loaded.");
+        log(input_data.length + " bytes have been loaded.");
+        loadedFromFile = false;
+
+        return input_data;
     }
 
     private void importCipherKey(boolean type) {
@@ -177,11 +207,11 @@ public class Application {
     }
 
     private void generateKey() {
-        String number = JOptionPane.showInputDialog("Key length [5-400]: ");
+        String number = JOptionPane.showInputDialog("Prime length [512, 1024]: ", "512");
         try {
             int length = Integer.parseInt(number);
-            if (length < 5 || length > 400) {
-                throw new Exception("Invalid key length (only in range 5 - 400).");
+            if (length < 512 || length > 1024) {
+                throw new Exception("Invalid prime length (only in range 512 - 1024).");
             }
             KeyGenerator keygen = new KeyGenerator(length, 160);
             keygen.generate();
@@ -314,7 +344,7 @@ public class Application {
     private void _updateButtons() {
         if (data != null && data.length > 0) {
             encryptButton.setEnabled(privateKey != null);
-            decryptButton.setEnabled(publicKey != null);
+            decryptButton.setEnabled(publicKey != null && signature != null && signature.length > 0);
         } else {
             encryptButton.setEnabled(false);
             decryptButton.setEnabled(false);
