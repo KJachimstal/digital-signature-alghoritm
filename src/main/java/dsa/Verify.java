@@ -1,7 +1,6 @@
 package dsa;
 
 import dsa.keys.PublicKey;
-
 import java.math.BigInteger;
 
 public class Verify extends Cryptography {
