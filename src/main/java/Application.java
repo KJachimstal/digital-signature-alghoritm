@@ -1,4 +1,5 @@
 import dsa.*;
+import dsa.exceptions.CorruptedDataException;
 import dsa.keys.PrivateKey;
 import dsa.keys.PublicKey;
 
@@ -8,7 +9,6 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -40,12 +40,13 @@ public class Application {
     private JButton inputSignatureFile;
     private JButton inputSignatureText;
     private JLabel infoSignatureFile;
+    private JButton setAsSignatureButton;
     private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 //    Model
     private byte[] data;
     private byte[] signature;
-    private Block[] previous;
+    private byte[] results;
     private JFileChooser inputChooser;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -81,8 +82,9 @@ public class Application {
         importPublicKeyButton.addActionListener(e -> importCipherKey(true));
         exportPrivateKeyButton.addActionListener(e -> exportCipherKey(false));
         importPrivateKeyButton.addActionListener(e -> importCipherKey(false));
-        encryptButton.addActionListener(e -> encrypt());
-        decryptButton.addActionListener(e -> decrypt());
+        setAsSignatureButton.addActionListener(e -> setAsSignature());
+        encryptButton.addActionListener(e -> sign());
+        decryptButton.addActionListener(e -> verify());
     }
 
     public void inputFileDialog() {
@@ -206,8 +208,16 @@ public class Application {
         }
     }
 
+    public void setAsSignature() {
+        if (results != null) {
+            signature = results;
+            log("Results are now signature.");
+            updateButtons();
+        }
+    }
+
     private void generateKey() {
-        String number = JOptionPane.showInputDialog("Prime length [512, 1024]: ", "512");
+        String number = JOptionPane.showInputDialog("Prime number length: ", "512");
         try {
             int length = Integer.parseInt(number);
             if (length < 512 || length > 1024) {
@@ -238,21 +248,21 @@ public class Application {
         updateButtons();
     }
 
-    private void encrypt() {
+    private void sign() {
         if (privateKey != null) {
             canProcess = false;
             _updateButtons();
 
-            log("Preparing encryption...");
+            log("Preparing signature...");
             Block[] blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
-            previous = Operations.generateBlocks(data, privateKey.getMaxLength());
-            Sign encryption = new Sign(blocks, privateKey);
-            log("Starting encryption...");
-            encryption.encrypt();
-            log("Sign completed successfully.");
+            Sign signature = new Sign(blocks, privateKey);
+            log("Starting signature...");
+            signature.sign();
+            log("Signature completed successfully.");
 
 
-            byte[] bytes = Operations.blocksToBytes(encryption.getResults(), privateKey.getMaxLength());
+            byte[] bytes = Operations.blocksToBytes(signature.getResults(), privateKey.getFillSize());
+            results = bytes;
 
             if (loadedFromFile) {
                 JFileChooser keyChooser = new JFileChooser();
@@ -261,7 +271,7 @@ public class Application {
                     String selectedPath = keyChooser.getSelectedFile().getAbsolutePath();
                     try {
                         DataUtils.saveBytes(bytes, selectedPath);
-                        log("Encrypted data saved: " + selectedPath);
+                        log("Signature data saved: " + selectedPath);
                     } catch (Exception ex) {
                         String message = "Could not save file: " + selectedPath;
                         log(message);
@@ -276,7 +286,7 @@ public class Application {
         }
     }
 
-    private void decrypt() {
+    private void verify() {
         if (publicKey != null) {
             canProcess = false;
             _updateButtons();
@@ -284,37 +294,28 @@ public class Application {
             log("Preparing decryption...");
             System.out.println(Arrays.toString(data));
             Block[] blocks = Operations.generateBlocks(data, publicKey.getMaxLength());
-            Verify decryption = new Verify(blocks, previous,  publicKey);
+            Block[] data = Operations.generateBlocks(signature, publicKey.getFillSize());
+            Verify verify = new Verify(data, blocks, publicKey);
             log("Starting decryption...");
 
             try {
-                decryption.check();
+                boolean check = verify.check();
                 log("Verify completed successfully.");
-//                byte[] bytes = Operations.blocksToBytes(decryption.getResults(), privateKey.getMaxLength());
-                // TODO: Uncomment when blocksTOBytes method was finished
 
-                if (loadedFromFile) {
-                    JFileChooser keyChooser = new JFileChooser();
-                    int returnValue = keyChooser.showSaveDialog(mainPanel);
-                    if (returnValue == JFileChooser.APPROVE_OPTION) {
-                        String selectedPath = keyChooser.getSelectedFile().getAbsolutePath();
-                        try {
-//                        DataUtils.saveBytes(bytes, selectedPath);
-                            // TODO: Uncomment saveBytes in check method
-                            log("Decrypted data saved: " + selectedPath);
-                        } catch (Exception ex) {
-                            String message = "Could not save file: " + selectedPath;
-                            log(message);
-                            JOptionPane.showMessageDialog(frame, message, "Save error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
+                if (check) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Signature is valid.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE,
+                            getIcon("check.png", 45, 45));
                 } else {
-//                    outputTextArea.setText(new String(bytes));
-                    // TODO: Uncomment setText in check method
+                    JOptionPane.showMessageDialog(frame,
+                            "Signature is invalid.",
+                            "Invalid",
+                            JOptionPane.INFORMATION_MESSAGE,
+                            getIcon("cross.png", 45, 45));
                 }
-            } catch (Exception e) {
-//            } catch (CorruptedDataException e) {
-                // TODO: Uncomment corrupted data exception in check method
+            } catch (CorruptedDataException e) {
                 String message = "Corrupted data.";
                 log(message);
                 JOptionPane.showMessageDialog(frame, message, "Verify error", JOptionPane.ERROR_MESSAGE);
@@ -337,6 +338,18 @@ public class Application {
         }
     }
 
+    private ImageIcon getIcon(String path, int width, int height) {
+        try {
+            Image img = ImageIO.read(getClass().getResource(path));
+            img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(img);
+        } catch (Exception ex) {
+//            ...
+            System.out.println(ex);
+        }
+        return null;
+    }
+
     private void updateButtons() {
         _updateButtons();
     }
@@ -349,6 +362,7 @@ public class Application {
             encryptButton.setEnabled(false);
             decryptButton.setEnabled(false);
         }
+        setAsSignatureButton.setEnabled(results != null && results.length > 0);
     }
 
     private void log(String message) {

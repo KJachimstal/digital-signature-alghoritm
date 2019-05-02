@@ -1,5 +1,6 @@
 package dsa;
 
+import dsa.exceptions.CorruptedDataException;
 import dsa.keys.PrivateKey;
 import dsa.keys.PublicKey;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +34,9 @@ class CryptographyTest {
     }
 
     @Test
-    void encrypt() {
+    void encrypt() throws CorruptedDataException {
         sign = new Sign(blocks, privateKey);
-        sign.encrypt();
+        sign.sign();
 
         verify = new Verify(sign.getResults(), blocks, publicKey);
 

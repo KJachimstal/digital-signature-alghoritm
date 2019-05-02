@@ -17,7 +17,7 @@ public class Sign extends Cryptography {
         rPrim = generateRPrim();
     }
 
-    public void encrypt() {
+    public void sign() {
         results = new Block[data.length * 2];
         for (int i = 0; i < data.length; i++) {
             BigInteger m = Operations.Hash(data[i].toString());
