@@ -18,11 +18,17 @@ public class KeyGenerator {
     }
 
     public void generate() {
+        System.out.println("Generate P");
         p = generatePrimeNumber();
+        System.out.println("Generate Q");
         q = generateQ();
+        System.out.println("Generate H");
         h = generateH();
+        System.out.println("Generate A");
         a = generateA();
+        System.out.println("Generate B");
         b = generateB();
+        System.out.println("End generate");
         publicKey = new PublicKey(p, h, q, b);
         privateKey = new PrivateKey(a, p, q, h);
     }
@@ -40,11 +46,9 @@ public class KeyGenerator {
     public BigInteger generateQ() {
         Random rng = new Random();
         BigInteger result;
-        boolean remainder;
         do {
             result = new BigInteger(160, rng);
-            remainder = p.subtract(BigInteger.ONE).mod(result).equals(BigInteger.ZERO);
-        } while (!result.isProbablePrime(100) || result.bitLength() != 160 || !remainder);
+        } while (!result.isProbablePrime(100) || result.bitLength() != 160 );
         return result;
     }
 
@@ -52,28 +56,31 @@ public class KeyGenerator {
         Random rng = new Random();
         BigInteger result;
         int range = 1 + rng.nextInt(p.bitLength() - 2);
+
         do {
             result = new BigInteger(range, rng);
-            if (result.modPow(q, p).equals(BigInteger.ONE)) {
+            BigInteger exponent = (p.subtract(BigInteger.ONE)).divide(result);
+            if (result.modPow(exponent, p).equals(BigInteger.ONE)) {
                 continue;
             }
-        } while (!result.isProbablePrime(100));
+
+        } while (result.equals(BigInteger.ZERO));
         return result;
     }
 
     public BigInteger generateA() {
         Random rng = new Random();
+        BigInteger result;
         int range = 1 + rng.nextInt(q.bitLength() - 2);
-        BigInteger result = new BigInteger(range, rng);
+        do {
+            result = new BigInteger(range, rng);
+        } while (result.equals(BigInteger.ZERO));
 
         return result;
     }
 
     public BigInteger generateB() {
-        BigInteger result;
-        result = h.modPow(a, p);
-
-        return result;
+        return h.modPow(a, p);
     }
 
     public PublicKey getPublicKey() {

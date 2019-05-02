@@ -47,8 +47,6 @@ public class Application {
     private PublicKey publicKey;
     private boolean canProcess = false;
     private boolean loadedFromFile = false;
-    // TODO: Dalete rPrim attribute
-    private BigInteger rPrim;
 
     public Application(JFrame frame) {
         this.frame = frame;
@@ -219,8 +217,6 @@ public class Application {
             Block[] blocks = Operations.generateBlocks(data, privateKey.getMaxLength());
             previous = Operations.generateBlocks(data, privateKey.getMaxLength());
             Sign encryption = new Sign(blocks, privateKey);
-            // TODO: Delete rPrim attribution
-            rPrim = encryption.getrPrim();
             log("Starting encryption...");
             encryption.encrypt();
             log("Sign completed successfully.");
@@ -258,8 +254,7 @@ public class Application {
             log("Preparing decryption...");
             System.out.println(Arrays.toString(data));
             Block[] blocks = Operations.generateBlocks(data, publicKey.getMaxLength());
-            // TODO: Delete rPrim form constructor in decrypt method
-            Verify decryption = new Verify(blocks, previous,  publicKey, rPrim);
+            Verify decryption = new Verify(blocks, previous,  publicKey);
             log("Starting decryption...");
 
             try {

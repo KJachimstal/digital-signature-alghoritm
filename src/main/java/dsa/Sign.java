@@ -22,8 +22,8 @@ public class Sign extends Cryptography {
         for (int i = 0; i < data.length; i++) {
             BigInteger m = data[i].getBigInteger();
 
-            s1 = privateKey.getH().modPow(r, privateKey.getP()).mod(privateKey.getQ());
-            s2 = rPrim.multiply(m.add(privateKey.getA().multiply(s1))).mod(privateKey.getQ());
+            s1 = (privateKey.getH().modPow(r, privateKey.getP())).mod(privateKey.getQ());
+            s2 = rPrim.multiply((m.add(privateKey.getA().multiply(s1))).mod(privateKey.getQ()));
 
             results[i * 2] = new Block(s1, privateKey.getFillSize());
             results[i * 2 + 1] = new Block(s2, privateKey.getFillSize());
@@ -43,9 +43,7 @@ public class Sign extends Cryptography {
     }
 
     public BigInteger generateRPrim() {
-        System.out.println("R: "+r);
-        System.out.println("Q: "+privateKey.getQ());
-        return rPrim = r.modInverse(privateKey.getQ());
+        return r.modInverse(privateKey.getQ());
     }
 
     public Block[] getResults() {
