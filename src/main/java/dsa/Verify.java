@@ -38,12 +38,4 @@ public class Verify extends Cryptography {
 
         return true;
     }
-
-    public Block[] getEncrypted() {
-        return encrypted;
-    }
-
-    public Block[] getData() {
-        return data;
-    }
 }
