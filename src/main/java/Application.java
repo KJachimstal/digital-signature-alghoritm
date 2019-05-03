@@ -292,7 +292,6 @@ public class Application {
             _updateButtons();
 
             log("Preparing decryption...");
-            System.out.println(Arrays.toString(data));
             Block[] blocks = Operations.generateBlocks(data, publicKey.getMaxLength());
             Block[] data = Operations.generateBlocks(signature, publicKey.getFillSize());
             Verify verify = new Verify(data, blocks, publicKey);

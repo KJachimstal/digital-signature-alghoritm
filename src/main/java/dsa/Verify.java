@@ -16,7 +16,6 @@ public class Verify extends Cryptography {
 
     public boolean check() throws CorruptedDataException {
         if (encrypted.length % 2 != 0 || encrypted.length != data.length * 2) {
-            System.out.println(encrypted.length + " / " + data.length);
             throw new CorruptedDataException();
         }
         for (int i = 0; i < encrypted.length / 2; i++) {
